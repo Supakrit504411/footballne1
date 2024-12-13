@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Scoreboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #FFEB3B;
+            color: #0D47A1;
+            text-align: center;
+        }
+        .scoreboard {
+            margin-top: 50px;
+        }
+        .team {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 20px;
+        }
+        .team-name {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .team input {
+            font-size: 20px;
+            text-transform: uppercase;
+            padding: 5px;
+            margin: 10px;
+            border-radius: 5px;
+            border: 1px solid #0288D1;
+        }
+        .score {
+            font-size: 48px;
+            font-weight: bold;
+        }
+        .timer {
+            font-size: 36px;
+            margin: 20px;
+        }
+        .players, .substitutes {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #0D47A1;
+            border-radius: 10px;
+            background-color: #0288D1;
+            color: white;
+        }
+        .players li, .substitutes li {
+            list-style-type: none;
+            font-size: 18px;
+        }
+        .player-status {
+            color: #FF0000;
+        }
+        .controls {
+            margin-top: 20px;
+        }
+        input[type="text"] {
+            font-size: 16px;
+            padding: 5px;
+            margin: 5px;
+            border-radius: 5px;
+            border: 1px solid #0288D1;
+        }
+        input[type="number"] {
+            font-size: 16px;
+            padding: 5px;
+            margin: 5px;
+            border-radius: 5px;
+            border: 1px solid #0288D1;
+        }
+        button {
+            font-size: 14px;
+            padding: 5px 10px;
+            margin: 5px;
+            background-color: #0D47A1;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0288D1;
+        }
+        .penalty-kicks {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="scoreboard">
+        <h1>Football Scoreboard</h1>
+
+        <!-- Team Scores -->
+        <div class="team">
+            <div class="team-name">
+                <input type="text" id="team1-name" placeholder="ชื่อทีม 1" />
+                <span id="team1-score" class="score">0</span>
+            </div>
+            <button onclick="adjustScore('team1', 1)">+</button>
+            <button onclick="adjustScore('team1', -1)">-</button>
+        </div>
+        <div class="team">
+            <div class="team-name">
+                <input type="text" id="team2-name" placeholder="ชื่อทีม 2" />
+                <span id="team2-score" class="score">0</span>
+            </div>
+            <button onclick="adjustScore('team2', 1)">+</button>
+            <button onclick="adjustScore('team2', -1)">-</button>
+        </div>
+
+        <!-- Timer -->
+        <div class="timer">
+            <span id="timer">45:00</span>
+        </div>
+        <div class="controls">
+            <button onclick="startTimer()">เริ่มเวลา</button>
+            <input type="number" id="extra-time" placeholder="เพิ่มเวลา (นาที)" min="1" />
+            <button onclick="addExtraTime()">เพิ่มการทดเวลา</button>
+            <button onclick="switchHalf()">สลับครึ่งแรก/ครึ่งหลัง</button>
+        </div>
+
+        <!-- Player Lists -->
+        <div class="players">
+            <h3>ผู้เล่นตัวจริง ทีม 1</h3>
+            <ul id="starting-players-team1">
+                <li><input type="text" placeholder="ผู้เล่น 1" /> <input type="number" placeholder="ใบเหลือง" /> <input type="number" placeholder="ใบแดง" /></li>
+                <li><input type="text" placeholder="ผู้เล่น 2" /> <input type="number" placeholder="ใบเหลือง" /> <input type="number" placeholder="ใบแดง" /></li>
+                <!-- Add more players as needed -->
+            </ul>
+            <h3>ผู้เล่นตัวจริง ทีม 2</h3>
+            <ul id="starting-players-team2">
+                <li><input type="text" placeholder="ผู้เล่น 1" /> <input type="number" placeholder="ใบเหลือง" /> <input type="number" placeholder="ใบแดง" /></li>
+                <li><input type="text" placeholder="ผู้เล่น 2" /> <input type="number" placeholder="ใบเหลือง" /> <input type="number" placeholder="ใบแดง" /></li>
+                <!-- Add more players as needed -->
+            </ul>
+        </div>
+
+        <!-- Substitutes -->
+        <div class="substitutes">
+            <h3>ผู้เล่นตัวสำรอง ทีม 1</h3>
+            <ul id="substitutes-team1">
+                <li><input type="text" placeholder="สำรอง 1" /></li>
+                <li><input type="text" placeholder="สำรอง 2" /></li>
+                <!-- Add more substitutes as needed -->
+            </ul>
+            <h3>ผู้เล่นตัวสำรอง ทีม 2</h3>
+            <ul id="substitutes-team2">
+                <li><input type="text" placeholder="สำรอง 1" /></li>
+                <li><input type="text" placeholder="สำรอง 2" /></li>
+                <!-- Add more substitutes as needed -->
+            </ul>
+        </div>
+
+        <!-- Penalty Kicks -->
+        <div class="penalty-kicks">
+            <h3>จำนวนการยิงจุดโทษ</h3>
+            <div>
+                <label for="penalty-team1">ทีม 1:</label>
+                <input type="number" id="penalty-team1" value="0" min="0" />
+            </div>
+            <div>
+                <label for="penalty-team2">ทีม 2:</label>
+                <input type="number" id="penalty-team2" value="0" min="0" />
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let team1Score = 0;
+        let team2Score = 0;
+        let timer = 45 * 60; // 45 minutes in seconds
+        let isFirstHalf = true;
+
+        function adjustScore(team, amount) {
+            if (team === 'team1') {
+                team1Score += amount;
+                document.getElementById('team1-score').textContent = team1Score;
+            } else {
+                team2Score += amount;
+                document.getElementById('team2-score').textContent = team2Score;
+            }
+        }
+
+        function startTimer() {
+            setInterval(() => {
+                if (timer > 0) {
+                    timer--;
+                    const minutes = Math.floor(timer / 60);
+                    const seconds = timer % 60;
+                    document.getElementById('timer').textContent = `${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+                }
+            }, 1000);
+        }
+
+        function addExtraTime() {
+            let extraTime = parseInt(document.getElementById('extra-time').value) || 0;
+            timer += extraTime * 60; // Add extra time in seconds
+            alert(`เพิ่มเวลา ${extraTime} นาที`);
+        }
+
+        function switchHalf() {
+            isFirstHalf = !isFirstHalf;
+            timer = 45 * 60; // Reset timer for next half
+            const half = isFirstHalf ? 'ครึ่งแรก' : 'ครึ่งหลัง';
+            alert(`สลับเป็น ${half}`);
+        }
+    </script>
+</body>
+</html>
